@@ -1,45 +1,34 @@
-let values = new Array();
-
-main()
+main(0)
 function main() {
-    let actBtn = document.getElementsByClassName("active");
-    actBtn = Array.from(actBtn);
-
-    actBtn.forEach(btn => {
-        btn.addEventListener("click", () => {
-            getVal(btn);
+    const elements = Array.from(document.querySelectorAll("td.active"));
+    elements.forEach(el => {
+        el.addEventListener("click",function () {
+            let element = el.querySelector("span"),
+                type = element.getAttribute("type");
+            
+            insertIntoDisplay(type, element.getAttribute("val"));
         })
     })
 }
-function getVal(btn) {
-    let val = btn.querySelector("span").getAttribute("value");
-    if (val == "=") {
-        resolveSum();
-        return;
+
+let lastType = '';
+function insertIntoDisplay(type, val) {
+    let display = document.getElementById("display");
+    if (type === "number") {
+        display.innerText +=  lastType != "number" ? ` ${val}`: val;
+        lastType = type;
+
+    } else if (type === "operator" && lastType != "operator") {
+        display.innerText += ` ${val}`;
+        lastType = type;
+
+    } else if (type === "clean") {
+        cleanDisplay()
+
     }
-    values.push(val);
-    concatNumber(values);
 }
 
-function concatNumber(values) {
-    let originalNumbers = new Array();
-    let concatToNumber = '';
-    values.forEach((val) => {
-        if (Number.isInteger(parseInt(val)) || val == ".") {
-            concatToNumber += val;
-        } else {
-            concatToNumber = checkIfHasADotInTheEnd(concatToNumber)
-            originalNumbers.push(concatToNumber,val);
-            concatToNumber = '';
-        }
-    });
-    console.log(originalNumbers)
-}
-
-function checkIfHasADotInTheEnd(number) {
-    const num = number.length;
-    if (number.charAt(num - 1) === ".") {
-        number = number.substr(0,number.length-1);
-    }
-    return number;
+function cleanDisplay() {
+    const display = document.getElementById("display");
+    display.innerText = '';
 }
