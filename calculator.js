@@ -116,17 +116,21 @@ function calculateValues(arr, index) {
     const firstVal = parseFloat(arr[index-1]);
     const secondVal = parseFloat(arr[index+1]);
     let operator = arr[index];
-
+    let result;
     if (operator == "*") {
-        return firstVal * secondVal;        
+        result = firstVal * secondVal;        
+        result = String(result).length > 8 ? "ERR" : result;
     } else if (operator == "/") {
-        return firstVal / secondVal;
+        result = firstVal / secondVal;
+        result = String(result).length > 8 ? "ERR" : result;
     } else if (operator == "+") {
-        return firstVal + secondVal;
+        result = firstVal + secondVal;
+        result = String(result).length > 8 ? "ERR" : result;
     } else if (operator == "-") {
-        return firstVal - secondVal;
+        result = firstVal - secondVal;
+        result = String(result).length > 8 ? "ERR" : result;
     }
-  
+    return result
 }
 
 function subsOperatorByValue(arr, index, result) {
