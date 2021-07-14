@@ -14,7 +14,6 @@ window.onload = () => {
     main()
 }
 
-
 function main() {
     const elements = Array.from(document.querySelectorAll("td.active"));
     elements.forEach(el => {
@@ -28,13 +27,21 @@ function main() {
 
 let lastType = '';
 let quantityOperators = 0;
+let returnBeforeResult = {
+    "text": display.innerText, 
+    "beforeEqual": false, 
+    "lastType": lastType, 
+    "qttOperators": quantityOperators
+};
 function insertIntoDisplay(type, val) {
+    
+
     if (type === "number") {
         if (display.innerText.trim() == "0") {
             display.innerText = '';
         }
         if (verifyNumberLength()) {
-            display.innerText +=  lastType != "number" && lastType != '' && lastType != "dot" ? ` ${val}`: val;
+            display.innerText +=  lastType != "number" && lastType != '' && lastType != "dot" && lastType != "clean" ? ` ${val}`: val;
             lastType = type;
         }
 
@@ -46,17 +53,35 @@ function insertIntoDisplay(type, val) {
         display.innerText += ` ${val}`;
         lastType = type;
         quantityOperators++;
-
+    } else if (type === "clean") {
+        if (returnBeforeResult.beforeEqual === true) {
+            console.log(returnBeforeResult)
+            display.innerText = returnBeforeResult.text;
+            lastType = returnBeforeResult.lastType
+            quantityOperators = returnBeforeResult.qttOperators;
+            returnBeforeResult.beforeEqual = false;
+        } else {
+            const lastOperator = returnToLastVal();
+            if (lastOperator === 'operator') {
+                quantityOperators--;
+            }
+            lastType = 'clean';
+        } 
+        
     } else if (type === "clean-all") {
         cleanAllInDisplay();
         lastType = 'clean-all';
         quantityOperators = 0;
 
     } else if (type === "equal") {
+        returnBeforeResult.beforeEqual = true;
+        returnBeforeResult.text = display.innerText;
+        returnBeforeResult.lastType = lastType;
+        returnBeforeResult.qttOperators = quantityOperators;
+        
         checkOperators();
         lastType = 'number'; // needs to be a number because the first if of that function will not work in some cases, it's not wrong the way that was done
         quantityOperators = 0;
-        
     }
 }
 
@@ -70,14 +95,23 @@ function verifyNumberLength() {
     return false;
 }
 
-
 function cleanAllInDisplay() {
     display.innerText = 0;
 }
 
-function cleanLastAction() {
-    display;
-
+function returnToLastVal() {
+    const operators = ['+','-','*','/'];
+    let text = display.innerText;
+    let arrText = text.split(" ");
+    let lastVal = text.replace(` ${arrText[arrText.length -1]}`, "")
+    display.innerText = lastVal.trim();
+    if (operators.includes(arrText[arrText.length -1])) {
+        return "operator"
+    } else if (arrText.length === 1) {
+        console.log("ad")
+        display.innerText = 0;
+    }
+    return "number";
 }
 
 function checkOperators() {
